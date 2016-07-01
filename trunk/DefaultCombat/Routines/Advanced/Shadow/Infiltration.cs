@@ -1,15 +1,37 @@
 ﻿// Copyright (C) 2011-2016 Bossland GmbH
 // See the file LICENSE for the source code's detailed license
 
+using System.Windows.Media;
 using Buddy.BehaviorTree;
+using Buddy.CommonBot;
 using DefaultCombat.Core;
 using DefaultCombat.Helpers;
+using Targeting = DefaultCombat.Core.Targeting;
+using System.Linq;
+using Buddy.Swtor.Objects;
 
 namespace DefaultCombat.Routines
 {
 	internal class Infiltration : RotationBase
 	{
-		public override string Name
+	    private const string BreachingShadows = "Breaching Shadows";
+	    private const string Clairvoyance = "Clairvoyance";
+	    private const string CirclingShadows = "Circling Shadows";
+	    private const string WhirlingBlow = "Whirling Blow";
+	    private const string LowSlash = "Low Slash";
+	    private const string ClairvoyantStrike = "Clairvoyant Strike";
+	    private const string SpinningStrike = "Spinning Strike";
+	    private const string ForceBreach = "Force Breach";
+	    private const string ShadowStrike = "Shadow Strike";
+	    private const string Stealth = "Stealth";
+	    private const string InfiltrationTactics = "Infiltration Tactics";
+	    private const string PsychokineticBlast = "Psychokinetic Blast";
+	    private const string SaberStrike = "Saber Strike";
+	    private const string ForcePotency = "Force Potency";
+	    private const string Blackout = "Blackout";
+	    private const string ShadowSRespite = "Shadow's Respite";
+
+	    public override string Name
 		{
 			get { return "Shadow Infiltration"; }
 		}
@@ -23,7 +45,7 @@ namespace DefaultCombat.Routines
 					Spell.Buff("Force Valor"),
 					Spell.Cast("Guard", on => Me.Companion,
 						ret => Me.Companion != null && !Me.Companion.IsDead && !Me.Companion.HasBuff("Guard")),
-					Spell.Buff("Stealth", ret => !Rest.KeepResting() && !DefaultCombat.MovementDisabled)
+					Spell.Buff(Stealth, ret => !Rest.KeepResting() && !DefaultCombat.MovementDisabled)
 					);
 			}
 		}
@@ -37,38 +59,46 @@ namespace DefaultCombat.Routines
 					Spell.Buff("Battle Readiness", ret => Me.HealthPercent <= 85),
 					Spell.Buff("Deflection", ret => Me.HealthPercent <= 60),
 					Spell.Buff("Resilience", ret => Me.HealthPercent <= 50),
-					Spell.Buff("Force Potency"),
-					Spell.Buff("Blackout", ret => Me.ForcePercent <= 40)
+					Spell.Buff(ForcePotency),
+					Spell.Buff(Blackout, ret => Me.ForcePercent <= 40)
 					);
 			}
 		}
 
 		public override Composite SingleTarget
 		{
-			get
-			{
-				return new PrioritySelector(
-					Spell.Cast("Spinning Kick", ret => Me.IsStealthed),
-					Spell.Buff("Force Speed",
-						ret => !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1f && Me.CurrentTarget.Distance <= 3f),
+		    get
+		    {
+		        return new PrioritySelector(
+		            Spell.Cast("Spinning Kick", ret => Me.IsStealthed),
+		            Spell.Buff("Force Speed",
+		                ret =>
+		                    !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1f &&
+		                    Me.CurrentTarget.Distance <= 3f),
 
-					//Movement
-					CombatMovement.CloseDistance(Distance.Melee),
+		            //Movement
+		            CombatMovement.CloseDistance(Distance.Melee),
 
-					//Interrupts
-					Spell.Cast("Mind Snap", ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
-					Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
-					Spell.Cast("Low Slash", ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
+		            //Interrupts
+		            Spell.Cast("Mind Snap", ret => Me.CurrentTarget.IsCasting),
+		            Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting),
+		            Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting),
 
-					//Rotation
-					Spell.Cast("Force Breach", ret => Me.BuffCount("Breaching Shadows") == 3),
-					Spell.Cast("Shadow Strike", ret => Me.HasBuff("Stealth") || Me.HasBuff("Infiltration Tactics")),
-					Spell.Cast("Project", ret => Me.BuffCount("Circling Shadows") == 2),
-					Spell.Cast("Spinning Strike", ret => Me.CurrentTarget.HealthPercent <= 30),
-					Spell.Cast("Clairvoyant Strike"),
-					Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.1f && Me.IsMoving && Me.InCombat)
-					);
-			}
+		            //Rotation
+		            UseFB,
+		            RefreshClairvoyance,
+                    UsePB,
+		            new Action(delegate
+		            {
+		                PBLast = false;
+		                return RunStatus.Failure;
+		            }),
+                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowSRespite)),
+                    BuildBreachingShadows,
+		            Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.1f && Me.IsMoving && Me.InCombat),
+                    Spell.Cast(SaberStrike)
+		            );
+		    }
 		}
 
 		public override Composite AreaOfEffect
@@ -76,9 +106,124 @@ namespace DefaultCombat.Routines
 			get
 			{
 				return new PrioritySelector(
-					Spell.Cast("Whirling Blow", ret => Me.ForcePercent >= 60 && Targeting.ShouldPbaoe)
+					Spell.Cast(WhirlingBlow, ret => Me.ForcePercent >= 60 && Targeting.ShouldPbaoe)
 					);
 			}
 		}
+
+	    private bool PBLast { get; set; }
+
+	    private int BreachingShadowsCount
+	    {
+	        get { return Me.BuffCount(BreachingShadows); }
+	    }
+
+	    private int ClairvoyanceCount
+	    {
+            get { return Me.BuffCount(Clairvoyance); }
+	    }
+
+	    private int CirclingShadowsCount
+	    {
+            get { return Me.BuffCount(CirclingShadows); }
+	    }
+
+	    private Decorator BuildBreachingShadows
+	    {
+	        get
+	        {
+	            return new Decorator(ctx => BreachingShadowsCount < 3,
+	                new PrioritySelector(
+	                    Spell.Cast(ForcePotency, ret => BreachingShadowsCount == 0),
+	                    Spell.Cast("Shadow Stride", ret => BreachingShadowsCount == 0),
+	                    new Action(ctx =>
+	                    {
+	                        Logger.Write(string.Format("Blackout: {0} | FB: {1}", BlackoutAbility.CooldownTime,
+	                            ForcePotencyAbility.CooldownTime));
+	                        return RunStatus.Failure;
+	                    }),
+	                    Spell.Cast("Force Cloak",
+	                        ret =>
+	                            !Me.HasBuff(ShadowSRespite) && BreachingShadowsCount == 0 &&
+	                            BlackoutAbility.CooldownTime > 30 && ForcePotencyAbility.CooldownTime >= 60),
+	                    Spell.Cast(ShadowStrike, ret => Me.HasBuff(Stealth) || Me.HasBuff(InfiltrationTactics)),
+	                    Spell.Cast(SpinningStrike, ret => CanExecute),
+	                    Spell.Cast(ClairvoyantStrike),
+	                    Spell.Cast(LowSlash, reqs => Me.CurrentTarget.Distance > 1f),
+	                    Spell.Cast(WhirlingBlow,
+	                        reqs =>
+	                            Me.CurrentTarget.Distance > 1f && !AbilityManager.CanCast(LowSlash, Me.CurrentTarget) &&
+	                            Me.Force > 45)
+	                    ));
+	        }
+	    }
+
+	    private static TorAbility ForcePotencyAbility
+	    {
+	        get { return Me.KnownAbilitiesContainer.Single(ability => ability.Name == ForcePotency); }
+	    }
+
+	    private static TorAbility BlackoutAbility
+	    {
+	        get { return Me.KnownAbilitiesContainer.Single(ability => ability.Name == Blackout); }
+	    }
+
+	    private Decorator UsePB
+	    {
+	        get
+	        {
+	            return
+	                new Decorator(ctx => CirclingShadowsCount == 2 && ClairvoyanceCount == 2 && BreachingShadowsCount < 3,
+	                    new PrioritySelector(
+	                        new Action(delegate
+	                        {
+	                            PBLast = true;
+	                            return RunStatus.Failure;
+	                        }),
+	                        Spell.Cast(PsychokineticBlast),
+	                        Spell.Cast(SaberStrike)));
+	        }
+	    }
+
+	    private Decorator UseFB
+	    {
+	        get
+	        {
+	            return new Decorator(ctc => BreachingShadowsCount > 2,
+	                new PrioritySelector(
+	                    Spell.Cast(ForceBreach, ret => Me.BuffTimeLeft(BreachingShadows) < 25),
+	                    Spell.Cast(ForceBreach, ret => PBLast || !CanExecute),
+	                    Spell.Cast(SpinningStrike, ret => !PBLast && Me.BuffTimeLeft(BreachingShadows) > 24),
+                        Spell.Cast(SaberStrike)
+	                    ));
+	        }
+	    }
+
+	    private static bool CanExecute
+	    {
+	        get { return Me.CurrentTarget.HealthPercent < 30; }
+	    }
+
+	    private Decorator BuildClairvoyance
+	    {
+	        get
+	        {
+	            return new Decorator(ctx => ClairvoyanceCount < 2,
+	                new PrioritySelector(
+	                    Spell.Cast(ClairvoyantStrike),
+	                    Spell.Cast(WhirlingBlow)));
+	        }
+	    }
+
+	    private Decorator RefreshClairvoyance
+	    {
+	        get
+	        {
+	            return new Decorator(ctx => !Me.HasBuff(Clairvoyance) || Me.BuffTimeLeft(Clairvoyance) < 2,
+	                new PrioritySelector(
+	                    BuildClairvoyance,
+	                    Spell.Cast(SaberStrike)));
+	        }
+	    }
 	}
 }
