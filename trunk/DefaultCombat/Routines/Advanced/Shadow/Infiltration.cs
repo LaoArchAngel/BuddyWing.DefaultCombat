@@ -102,6 +102,7 @@ namespace DefaultCombat.Routines
 		            }),
                     Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowSRespite)),
                     FillBreachingShadows,
+                    ForceCloakCombo,
                     BuildBreachingShadows,
 		            Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.1f && Me.IsMoving && Me.InCombat),
                     Spell.Cast(SaberStrike)
