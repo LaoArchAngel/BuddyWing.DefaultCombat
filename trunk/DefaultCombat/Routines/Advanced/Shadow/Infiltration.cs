@@ -211,26 +211,22 @@ namespace DefaultCombat.Routines
 	        get { return Me.CurrentTarget.HealthPercent < 30; }
 	    }
 
-	    private Decorator BuildClairvoyance
-	    {
-	        get
-	        {
-	            return new Decorator(ctx => ClairvoyanceCount < 2,
-	                new PrioritySelector(
-	                    Spell.Cast(ClairvoyantStrike),
-	                    Spell.Cast(WhirlingBlow)));
-	        }
-	    }
-
 	    private Decorator RefreshClairvoyance
+ 	    {
+ 	        get
+ 	        {
+	            return new Decorator(ctx => ClairvoyanceCount == 0 || ClairvoyanceTime < 2,
+ 	                new PrioritySelector(
+                        Spell.Cast(ClairvoyantStrike),
+                        Spell.Cast(WhirlingBlow),
+	                    Spell.Cast(SaberStrike),
+                        new Action(ctx => RunStatus.Success)));
+ 	        }
+ 	    }
+
+	    private static double ClairvoyanceTime
 	    {
-	        get
-	        {
-	            return new Decorator(ctx => !Me.HasBuff(Clairvoyance) || Me.BuffTimeLeft(Clairvoyance) < 2,
-	                new PrioritySelector(
-	                    BuildClairvoyance,
-	                    Spell.Cast(SaberStrike)));
-	        }
+	        get { return Me.BuffTimeLeft(Clairvoyance); }
 	    }
 	}
 }
