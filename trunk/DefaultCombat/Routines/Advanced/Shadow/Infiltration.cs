@@ -70,7 +70,6 @@ namespace DefaultCombat.Routines
 		    get
 		    {
 		        return new PrioritySelector(
-		            Spell.Cast("Spinning Kick", ret => Me.IsStealthed),
 		            Spell.Buff("Force Speed",
 		                ret =>
 		                    !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1f &&
@@ -81,8 +80,8 @@ namespace DefaultCombat.Routines
 
 		            //Interrupts
 		            Spell.Cast("Mind Snap", ret => Me.CurrentTarget.IsCasting),
-		            Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting),
-		            Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting),
+		            //Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting),
+		            //Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting),
 
 		            //Rotation
 		            UseFB,
