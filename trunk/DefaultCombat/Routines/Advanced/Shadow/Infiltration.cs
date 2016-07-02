@@ -143,10 +143,6 @@ namespace DefaultCombat.Routines
 	                new PrioritySelector(
 	                    Spell.Cast(ForcePotency, ret => BreachingShadowsCount == 0),
 	                    Spell.Cast("Shadow Stride", ret => BreachingShadowsCount == 0),
-	                    Spell.Cast("Force Cloak",
-	                        ret =>
-	                            !Me.HasBuff(ShadowSRespite) && BreachingShadowsCount == 0 &&
-	                            BlackoutAbility.CooldownTime > 30 && ForcePotencyAbility.CooldownTime >= 60),
 	                    Spell.Cast(ShadowStrike, ret => Me.HasBuff(Stealth) || Me.HasBuff(InfiltrationTactics)),
 	                    Spell.Cast(SpinningStrike, ret => CanExecute),
 	                    Spell.Cast(ClairvoyantStrike),
@@ -221,6 +217,20 @@ namespace DefaultCombat.Routines
 	    private static double ClairvoyanceTime
 	    {
 	        get { return Me.BuffTimeLeft(Clairvoyance); }
+	    }
+
+	    private Decorator ForceCloakCombo
+	    {
+	        get
+	        {
+	            return new Decorator(reqs => !Me.HasBuff(ShadowSRespite) && BreachingShadowsCount == 0 && BlackoutAbility.CooldownTime > 30 && ForcePotencyAbility.CooldownTime >= 60,
+                    new Sequence(
+                        Spell.Cast("Force Cloak"),
+                        new WhileLoop(RunStatus.Success, reqs => Me.HasBuff("Stealth"), 
+                        new PrioritySelector(
+                            BuildBreachingShadows
+                            ))));
+	        }
 	    }
 	}
 }
