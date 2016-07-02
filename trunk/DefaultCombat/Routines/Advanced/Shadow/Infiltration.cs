@@ -170,7 +170,9 @@ namespace DefaultCombat.Routines
 	        get
 	        {
 	            return
-	                new Decorator(ctx => CirclingShadowsCount == 2 && ClairvoyanceCount == 2 && BreachingShadowsCount < 3,
+	                new Decorator(
+	                    ctx =>
+	                        CirclingShadowsCount > 1 && ClairvoyanceCount > 1 && BreachingShadowsCount < 3,
 	                    new PrioritySelector(
 	                        new Action(delegate
 	                        {
@@ -178,7 +180,8 @@ namespace DefaultCombat.Routines
 	                            return RunStatus.Failure;
 	                        }),
 	                        Spell.Cast(PsychokineticBlast),
-	                        Spell.Cast(SaberStrike)));
+	                        Spell.Cast(SaberStrike),
+                            new Action(ctx => RunStatus.Success)));
 	        }
 	    }
 
