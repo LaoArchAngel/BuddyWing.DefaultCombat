@@ -143,12 +143,6 @@ namespace DefaultCombat.Routines
 	                new PrioritySelector(
 	                    Spell.Cast(ForcePotency, ret => BreachingShadowsCount == 0),
 	                    Spell.Cast("Shadow Stride", ret => BreachingShadowsCount == 0),
-	                    new Action(ctx =>
-	                    {
-	                        Logger.Write(string.Format("Blackout: {0} | FB: {1}", BlackoutAbility.CooldownTime,
-	                            ForcePotencyAbility.CooldownTime));
-	                        return RunStatus.Failure;
-	                    }),
 	                    Spell.Cast("Force Cloak",
 	                        ret =>
 	                            !Me.HasBuff(ShadowSRespite) && BreachingShadowsCount == 0 &&
