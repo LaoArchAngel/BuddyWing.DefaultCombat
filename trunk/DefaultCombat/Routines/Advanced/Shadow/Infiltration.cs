@@ -8,6 +8,7 @@ using DefaultCombat.Core;
 using DefaultCombat.Helpers;
 using Targeting = DefaultCombat.Core.Targeting;
 using System.Linq;
+using Buddy.Swtor;
 using Buddy.Swtor.Objects;
 
 namespace DefaultCombat.Routines
@@ -84,6 +85,13 @@ namespace DefaultCombat.Routines
 		            //Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting),
 
 		            //Rotation
+                    //new Action(context =>
+                    //{
+                    //    Logger.Write(
+                    //        Me.KnownAbilitiesContainer.Single(ability => ability.Name == PsychokineticBlast)
+                    //            .GlobalCooldownTime.ToString(CultureInfo.InvariantCulture));
+                    //    return RunStatus.Failure;
+                    //}),
 		            UseFB,
 		            RefreshClairvoyance,
                     UsePB,
