@@ -70,7 +70,7 @@ namespace DefaultCombat.Routines
 		{
 		    get
 		    {
-		        return new PrioritySelector(
+		        return new LockSelector(
 		            Spell.Buff("Force Speed",
 		                ret =>
 		                    !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1f &&
