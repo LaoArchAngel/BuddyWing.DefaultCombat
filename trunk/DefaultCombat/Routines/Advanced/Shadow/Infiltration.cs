@@ -191,7 +191,9 @@ namespace DefaultCombat.Routines
 	                    Spell.Cast(ForceBreach, ret => Me.BuffTimeLeft(BreachingShadows) < 25),
 	                    Spell.Cast(ForceBreach, ret => PBLast || !CanExecute),
 	                    Spell.Cast(SpinningStrike, ret => !PBLast && Me.BuffTimeLeft(BreachingShadows) > 24),
-                        Spell.Cast(SaberStrike)
+                        Spell.Cast(ForceBreach),
+                        Spell.Cast(SaberStrike),
+                        new Action(ctx => RunStatus.Success)
 	                    ));
 	        }
 	    }
