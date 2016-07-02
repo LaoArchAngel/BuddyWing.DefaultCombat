@@ -1,7 +1,6 @@
 ﻿// Copyright (C) 2011-2016 Bossland GmbH
 // See the file LICENSE for the source code's detailed license
 
-using System.Windows.Media;
 using Buddy.BehaviorTree;
 using Buddy.CommonBot;
 using DefaultCombat.Core;
@@ -202,7 +201,7 @@ namespace DefaultCombat.Routines
 	        {
 	            return new Decorator(ctc => BreachingShadowsCount > 2,
 	                new PrioritySelector(
-	                    Spell.Cast(ForceBreach, ret => Me.BuffTimeLeft(BreachingShadows) < 25),
+                        Spell.Cast(ForceBreach, ret => Me.BuffTimeLeft(BreachingShadows) < 25),
 	                    Spell.Cast(ForceBreach, ret => PBLast || !CanExecute),
 	                    Spell.Cast(SpinningStrike, ret => !PBLast && Me.BuffTimeLeft(BreachingShadows) > 24),
                         Spell.Cast(ForceBreach),
@@ -218,17 +217,17 @@ namespace DefaultCombat.Routines
 	    }
 
 	    private Decorator RefreshClairvoyance
- 	    {
- 	        get
- 	        {
+	    {
+	        get
+	        {
 	            return new Decorator(ctx => ClairvoyanceCount == 0 || ClairvoyanceTime < 2,
- 	                new PrioritySelector(
+	                new PrioritySelector(
                         Spell.Cast(ClairvoyantStrike),
                         Spell.Cast(WhirlingBlow),
 	                    Spell.Cast(SaberStrike),
                         new Action(ctx => RunStatus.Success)));
- 	        }
- 	    }
+	        }
+	    }
 
 	    private static double ClairvoyanceTime
 	    {
