@@ -142,7 +142,7 @@ namespace DefaultCombat.Routines
 	        {
 	            return new Decorator(ctx => BreachingShadowsCount < 3,
 	                new PrioritySelector(
-	                    Spell.Cast(ShadowStrike, ret => Me.HasBuff(Stealth) || Me.HasBuff(InfiltrationTactics)),
+                        Spell.Cast(ShadowStrike, ret => Me.HasBuff(InfiltrationTactics)),
 	                    Spell.Cast(SpinningStrike, ret => CanExecute),
 	                    Spell.Cast(ClairvoyantStrike),
 	                    Spell.Cast(LowSlash, reqs => Me.CurrentTarget.Distance > 1f),
