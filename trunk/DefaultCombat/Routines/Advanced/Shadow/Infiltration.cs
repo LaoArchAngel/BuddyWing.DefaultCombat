@@ -101,6 +101,7 @@ namespace DefaultCombat.Routines
 		                return RunStatus.Failure;
 		            }),
                     Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowSRespite)),
+                    FillBreachingShadows,
                     BuildBreachingShadows,
 		            Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.1f && Me.IsMoving && Me.InCombat),
                     Spell.Cast(SaberStrike)
@@ -141,8 +142,6 @@ namespace DefaultCombat.Routines
 	        {
 	            return new Decorator(ctx => BreachingShadowsCount < 3,
 	                new PrioritySelector(
-	                    Spell.Cast(ForcePotency, ret => BreachingShadowsCount == 0),
-	                    Spell.Cast("Shadow Stride", ret => BreachingShadowsCount == 0),
 	                    Spell.Cast(ShadowStrike, ret => Me.HasBuff(Stealth) || Me.HasBuff(InfiltrationTactics)),
 	                    Spell.Cast(SpinningStrike, ret => CanExecute),
 	                    Spell.Cast(ClairvoyantStrike),
@@ -152,6 +151,17 @@ namespace DefaultCombat.Routines
 	                            Me.CurrentTarget.Distance > 1f && !AbilityManager.CanCast(LowSlash, Me.CurrentTarget) &&
 	                            Me.Force > 45)
 	                    ));
+	        }
+	    }
+
+	    private Decorator FillBreachingShadows
+	    {
+	        get
+	        {
+	            return new Decorator(reqs => BreachingShadowsCount == 0,
+	                new PrioritySelector(
+                        Spell.Cast(ForcePotency),
+	                    Spell.Cast("Shadow Stride")));
 	        }
 	    }
 
