@@ -254,8 +254,12 @@ namespace DefaultCombat.Routines
 	                    reqs =>
 	                        !Me.HasBuff(ShadowsRespite) && BreachingShadowsCount == 0 && BlackoutAbility.CooldownTime > 30 &&
 	                        ForcePotencyAbility.CooldownTime >= 60,
-	                    Spell.Cast("Force Cloak")
-	                    );
+	                    new Action(ret =>
+	                    {
+	                        Spell.Cast("Force Cloak");
+	                        Spell.Cast(ForcePotency);
+	                        Spell.CastOnGround(WhirlingBlow, reqs => Me.HasBuff(Stealth));
+	                    }));
 	        }
 	    }
 
