@@ -249,13 +249,13 @@ namespace DefaultCombat.Routines
 	    {
 	        get
 	        {
-	            return new Decorator(reqs => !Me.HasBuff(ShadowsRespite) && BreachingShadowsCount == 0 && BlackoutAbility.CooldownTime > 30 && ForcePotencyAbility.CooldownTime >= 60,
-                    new Sequence(
-                        Spell.Cast("Force Cloak"),
-                        new WhileLoop(RunStatus.Success, reqs => Me.HasBuff("Stealth"), 
-                        new PrioritySelector(
-                            BuildBreachingShadows
-                            ))));
+	            return
+	                new Decorator(
+	                    reqs =>
+	                        !Me.HasBuff(ShadowsRespite) && BreachingShadowsCount == 0 && BlackoutAbility.CooldownTime > 30 &&
+	                        ForcePotencyAbility.CooldownTime >= 60,
+	                    Spell.Cast("Force Cloak")
+	                    );
 	        }
 	    }
 
