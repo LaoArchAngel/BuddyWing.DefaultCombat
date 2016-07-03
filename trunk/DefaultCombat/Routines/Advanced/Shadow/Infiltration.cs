@@ -29,7 +29,7 @@ namespace DefaultCombat.Routines
 	    private const string SaberStrike = "Saber Strike";
 	    private const string ForcePotency = "Force Potency";
 	    private const string Blackout = "Blackout";
-	    private const string ShadowSRespite = "Shadow's Respite";
+	    private const string ShadowsRespite = "Shadow's Respite";
 
 	    public override string Name
 		{
@@ -99,7 +99,7 @@ namespace DefaultCombat.Routines
 		                PBLast = false;
 		                return RunStatus.Failure;
 		            }),
-                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowSRespite)),
+                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite)),
                     FillBreachingShadows,
                     ForceCloakCombo,
                     BuildBreachingShadows,
@@ -238,7 +238,7 @@ namespace DefaultCombat.Routines
 	    {
 	        get
 	        {
-	            return new Decorator(reqs => !Me.HasBuff(ShadowSRespite) && BreachingShadowsCount == 0 && BlackoutAbility.CooldownTime > 30 && ForcePotencyAbility.CooldownTime >= 60,
+	            return new Decorator(reqs => !Me.HasBuff(ShadowsRespite) && BreachingShadowsCount == 0 && BlackoutAbility.CooldownTime > 30 && ForcePotencyAbility.CooldownTime >= 60,
                     new Sequence(
                         Spell.Cast("Force Cloak"),
                         new WhileLoop(RunStatus.Success, reqs => Me.HasBuff("Stealth"), 
