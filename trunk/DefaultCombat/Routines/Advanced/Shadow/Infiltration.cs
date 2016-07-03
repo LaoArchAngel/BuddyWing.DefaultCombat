@@ -256,9 +256,9 @@ namespace DefaultCombat.Routines
 	                        ForcePotencyAbility.CooldownTime >= 60,
 	                    new Action(ret =>
 	                    {
-	                        Spell.Cast("Force Cloak");
-	                        Spell.Cast(ForcePotency);
-	                        Spell.CastOnGround(WhirlingBlow, reqs => Me.HasBuff(Stealth));
+                            AbilityManager.Cast("Force Cloak", Me);
+	                        AbilityManager.Cast(ForcePotency, Me);
+                            AbilityManager.Cast(WhirlingBlow, Me.CurrentTarget);
 	                    }));
 	        }
 	    }
