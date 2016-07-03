@@ -72,7 +72,7 @@ namespace DefaultCombat.Routines
 		        return new LockSelector(
 		            Spell.Buff("Force Speed",
 		                ret =>
-		                    !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1f &&
+		                    !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1.5f &&
 		                    Me.CurrentTarget.Distance <= 3f),
 
 		            //Movement
@@ -104,7 +104,7 @@ namespace DefaultCombat.Routines
                     FillBreachingShadows,
                     ForceCloakCombo,
                     BuildBreachingShadows,
-		            Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.1f && Me.IsMoving && Me.InCombat),
+		            Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.5f && Me.IsMoving && Me.InCombat),
                     Spell.Cast(SaberStrike)
 		            );
 		    }
