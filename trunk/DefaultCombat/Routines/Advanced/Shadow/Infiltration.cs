@@ -121,7 +121,7 @@ namespace DefaultCombat.Routines
 
 	    private bool PBLast { get; set; }
 
-	    private int BreachingShadowsCount
+	    private static int BreachingShadowsCount
 	    {
 	        get { return Me.BuffCount(BreachingShadows); }
 	    }
@@ -154,7 +154,7 @@ namespace DefaultCombat.Routines
 	        }
 	    }
 
-	    private Decorator FillBreachingShadows
+	    private static Decorator FillBreachingShadows
 	    {
 	        get
 	        {
