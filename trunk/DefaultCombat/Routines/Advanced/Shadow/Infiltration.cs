@@ -151,7 +151,7 @@ namespace DefaultCombat.Routines
 	    {
 	        get
 	        {
-	            return new Decorator(ctx => BreachingShadowsCount < 3,
+	            return new Decorator(ctx => BreachingShadowsCount < 3 || BreachingShadowsDowntime,
 	                new PrioritySelector(
                         Spell.Cast(ShadowStrike, ret => Me.HasBuff(InfiltrationTactics)),
 	                    Spell.Cast(SpinningStrike, ret => CanExecute),
@@ -212,11 +212,10 @@ namespace DefaultCombat.Routines
 	        {
 	            return new Decorator(ctc => BreachingShadowsCount > 2,
 	                new PrioritySelector(
-                        Spell.Cast(ForceBreach, ret => Me.BuffTimeLeft(BreachingShadows) < 25),
+                        Spell.Cast(ForceBreach, ret => !BreachingShadowsDowntime),
 	                    Spell.Cast(ForceBreach, ret => PBLast || !CanExecute),
-	                    Spell.Cast(SpinningStrike, ret => !PBLast && Me.BuffTimeLeft(BreachingShadows) > 24),
+	                    Spell.Cast(SpinningStrike, ret => !PBLast && BreachingShadowsDowntime),
                         Spell.Cast(ForceBreach),
-                        Spell.Cast(SaberStrike),
                         new Action(ctx => RunStatus.Success)
 	                    ));
 	        }
