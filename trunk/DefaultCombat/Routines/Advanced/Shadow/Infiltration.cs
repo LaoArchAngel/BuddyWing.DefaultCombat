@@ -121,6 +121,17 @@ namespace DefaultCombat.Routines
 
 	    private bool PBLast { get; set; }
 
+	    private static bool IsGC
+	    {
+	        get
+	        {
+	            TorAbility saberStrike = Me.KnownAbilitiesContainer.Single(ability => ability.Name == SaberStrike);
+	            EffectResult isReady = Me.IsAbilityReady(saberStrike, Me.CurrentTarget);
+
+	            return isReady == EffectResult.NotReady;
+	        }
+	    }
+
 	    private static int BreachingShadowsCount
 	    {
 	        get { return Me.BuffCount(BreachingShadows); }
