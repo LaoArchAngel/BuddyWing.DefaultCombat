@@ -157,10 +157,10 @@ namespace DefaultCombat.Routines
                         Spell.Cast(ShadowStrike, ret => Me.HasBuff(InfiltrationTactics)),
 	                    Spell.Cast(SpinningStrike, ret => CanExecute),
 	                    Spell.Cast(ClairvoyantStrike),
-	                    Spell.Cast(LowSlash, reqs => Me.CurrentTarget.Distance > 1f),
+	                    Spell.Cast(LowSlash, reqs => Me.CurrentTarget.Distance > 0.4f),
 	                    Spell.Cast(WhirlingBlow,
 	                        reqs =>
-	                            Me.CurrentTarget.Distance > 1f && !AbilityManager.CanCast(LowSlash, Me.CurrentTarget) &&
+	                            Me.CurrentTarget.Distance > 0.4f && !AbilityManager.CanCast(LowSlash, Me.CurrentTarget) &&
 	                            Me.Force > 45)
 	                    ));
 	        }
