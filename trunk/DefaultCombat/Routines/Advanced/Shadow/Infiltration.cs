@@ -214,8 +214,7 @@ namespace DefaultCombat.Routines
                         Spell.Cast(ForceBreach, ret => !BreachingShadowsDowntime),
 	                    Spell.Cast(ForceBreach, ret => PBLast || !CanExecute),
 	                    Spell.Cast(SpinningStrike, ret => !PBLast && BreachingShadowsDowntime),
-                        Spell.Cast(ForceBreach),
-                        new Action(ctx => RunStatus.Success)
+                        Spell.Cast(ForceBreach)
 	                    ));
 	        }
 	    }
@@ -237,9 +236,7 @@ namespace DefaultCombat.Routines
 	            return new Decorator(ctx => ClairvoyanceCount == 0 || ClairvoyanceTime < 2,
 	                new PrioritySelector(
                         Spell.Cast(ClairvoyantStrike),
-                        Spell.Cast(WhirlingBlow),
-	                    Spell.Cast(SaberStrike),
-                        new Action(ctx => RunStatus.Success)));
+                        Spell.Cast(WhirlingBlow)));
 	        }
 	    }
 
