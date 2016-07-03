@@ -222,6 +222,11 @@ namespace DefaultCombat.Routines
 	        }
 	    }
 
+	    private static double BreachingShadowsTime
+	    {
+	        get { return Me.BuffTimeLeft(BreachingShadows); }
+	    }
+
 	    private static bool CanExecute
 	    {
 	        get { return Me.CurrentTarget.HealthPercent < 30; }
@@ -257,6 +262,11 @@ namespace DefaultCombat.Routines
                             BuildBreachingShadows
                             ))));
 	        }
+	    }
+
+	    private static bool BreachingShadowsDowntime
+	    {
+	        get { return BreachingShadowsTime > 24; }
 	    }
 	}
 }
