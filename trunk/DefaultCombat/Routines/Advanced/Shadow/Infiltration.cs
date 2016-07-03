@@ -91,6 +91,7 @@ namespace DefaultCombat.Routines
                     //            .GlobalCooldownTime.ToString(CultureInfo.InvariantCulture));
                     //    return RunStatus.Failure;
                     //}),
+                    DuringGC,
 		            UseFB,
 		            RefreshClairvoyance,
                     UsePB,
@@ -266,6 +267,18 @@ namespace DefaultCombat.Routines
 	    private static bool BreachingShadowsDowntime
 	    {
 	        get { return BreachingShadowsTime > 24; }
+	    }
+
+	    private static Decorator DuringGC
+	    {
+	        get
+	        {
+	            return new Decorator(reqs => IsGC,
+	                new PrioritySelector(
+	                    FillBreachingShadows,
+	                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite)),
+	                    new Action(ret => RunStatus.Success)));
+	        }
 	    }
 	}
 }
