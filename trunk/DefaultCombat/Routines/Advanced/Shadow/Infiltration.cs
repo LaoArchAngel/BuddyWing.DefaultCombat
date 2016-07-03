@@ -201,9 +201,7 @@ namespace DefaultCombat.Routines
 	                            PBLast = true;
 	                            return RunStatus.Failure;
 	                        }),
-	                        Spell.Cast(PsychokineticBlast),
-	                        Spell.Cast(SaberStrike),
-                            new Action(ctx => RunStatus.Success)));
+	                        Spell.Cast(PsychokineticBlast)));
 	        }
 	    }
 
