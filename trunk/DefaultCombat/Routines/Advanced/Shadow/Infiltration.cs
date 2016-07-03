@@ -100,7 +100,7 @@ namespace DefaultCombat.Routines
 		                PBLast = false;
 		                return RunStatus.Failure;
 		            }),
-                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite)),
+                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite) && Me.Force <= 40),
                     FillBreachingShadows,
                     ForceCloakCombo,
                     BuildBreachingShadows,
@@ -252,8 +252,9 @@ namespace DefaultCombat.Routines
 	            return
 	                new Decorator(
 	                    reqs =>
-	                        !Me.HasBuff(ShadowsRespite) && BreachingShadowsCount == 0 && BlackoutAbility.CooldownTime > 30 &&
-	                        ForcePotencyAbility.CooldownTime >= 60,
+	                        !Me.HasBuff(ShadowsRespite) && BreachingShadowsCount == 0 &&
+	                        Me.IsAbilityReady(BlackoutAbility, Me) == EffectResult.NotReady &&
+	                        Me.IsAbilityReady(ForcePotencyAbility, Me) == EffectResult.NotReady && Me.Force <= 40,
 	                    new Action(ret =>
 	                    {
                             AbilityManager.Cast("Force Cloak", Me);
@@ -275,7 +276,7 @@ namespace DefaultCombat.Routines
 	            return new Decorator(reqs => IsGC,
 	                new PrioritySelector(
 	                    FillBreachingShadows,
-	                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite)),
+	                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite) && Me.Force < 40),
 	                    new Action(ret => RunStatus.Success)));
 	        }
 	    }
