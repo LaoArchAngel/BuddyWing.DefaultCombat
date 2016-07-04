@@ -52,17 +52,14 @@ namespace DefaultCombat.Routines
 
 		public override Composite Cooldowns
 		{
-			get
-			{
-				return new PrioritySelector(
-					Spell.Buff("Force of Will"),
-					Spell.Buff("Battle Readiness", ret => Me.HealthPercent <= 85),
-					Spell.Buff("Deflection", ret => Me.HealthPercent <= 60),
-					Spell.Buff("Resilience", ret => Me.HealthPercent <= 50),
-					Spell.Buff(ForcePotency),
-					Spell.Buff(Blackout, ret => Me.ForcePercent <= 40)
-					);
-			}
+		    get
+		    {
+		        return new PrioritySelector(
+		            Spell.Buff("Force of Will"),
+		            Spell.Buff("Battle Readiness", ret => Me.HealthPercent <= 85),
+		            Spell.Buff("Deflection", ret => Me.HealthPercent <= 60),
+		            Spell.Buff("Resilience", ret => Me.HealthPercent <= 50));
+		    }
 		}
 
 		public override Composite SingleTarget
