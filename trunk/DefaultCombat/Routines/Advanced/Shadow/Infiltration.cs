@@ -109,12 +109,7 @@ namespace DefaultCombat.Routines
 
 		public override Composite AreaOfEffect
 		{
-			get
-			{
-				return new PrioritySelector(
-					Spell.Cast(WhirlingBlow, ret => Me.ForcePercent >= 60 && Targeting.ShouldPbaoe)
-					);
-			}
+			get { return SingleTarget; }
 		}
 
 	    private bool PBLast { get; set; }
