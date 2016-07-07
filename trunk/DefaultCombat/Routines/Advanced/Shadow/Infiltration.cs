@@ -7,6 +7,7 @@ using DefaultCombat.Core;
 using DefaultCombat.Helpers;
 using Targeting = DefaultCombat.Core.Targeting;
 using System.Linq;
+using System.Threading;
 using Buddy.Swtor;
 using Buddy.Swtor.Objects;
 
@@ -14,6 +15,7 @@ namespace DefaultCombat.Routines
 {
 	internal class Infiltration : RotationBase
 	{
+	    private static TorAbility _forceCloakAbility;
 	    private const string BreachingShadows = "Breaching Shadows";
 	    private const string Clairvoyance = "Clairvoyance";
 	    private const string CirclingShadows = "Circling Shadows";
@@ -30,6 +32,7 @@ namespace DefaultCombat.Routines
 	    private const string ForcePotency = "Force Potency";
 	    private const string Blackout = "Blackout";
 	    private const string ShadowsRespite = "Shadow's Respite";
+	    private const string ForceCloak = "Force Cloak";
 
 	    public override string Name
 		{
@@ -66,7 +69,7 @@ namespace DefaultCombat.Routines
 		{
 		    get
 		    {
-		        return new LockSelector(
+		        return new PrioritySelector(
 		            Spell.Buff("Force Speed",
 		                ret =>
 		                    !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1.5f &&
@@ -245,14 +248,36 @@ namespace DefaultCombat.Routines
 	                new Decorator(
 	                    reqs =>
 	                        !Me.HasBuff(ShadowsRespite) && BreachingShadowsCount == 0 &&
+                            AbilityManager.CanCast(ForceCloak, Me) &&
 	                        Me.IsAbilityReady(BlackoutAbility, Me) == EffectResult.NotReady &&
 	                        Me.IsAbilityReady(ForcePotencyAbility, Me) == EffectResult.NotReady && Me.Force <= 40,
 	                    new Action(ret =>
 	                    {
-                            AbilityManager.Cast("Force Cloak", Me);
-	                        AbilityManager.Cast(ForcePotency, Me);
-                            AbilityManager.Cast(WhirlingBlow, Me.CurrentTarget);
+                            EffectResult result;
+
+                            Logger.Write("Casting Force Cloak");
+	                        while (!Me.HasBuff(ForceCloak))
+	                        {
+	                            Thread.Sleep(100);
+                                Me.AbilityActivate(ForceCloakAbility,
+                                    Me, out result);
+                            }
+
+                            Logger.Write("Casting Force Potency?");
+	                        Me.AbilityActivate(ForcePotencyAbility, Me, out result);
+
+                            Logger.Write("Casting Whirling Blow");
+	                        Me.AbilityActivate(
+	                            AbilityManager.KnownAbilities.Find(ability => ability.Name == WhirlingBlow), Me, out result);
 	                    }));
+	        }
+	    }
+
+	    private static TorAbility ForceCloakAbility
+	    {
+	        get {
+	            return _forceCloakAbility ??
+	                   (_forceCloakAbility = AbilityManager.KnownAbilities.Find(ability => ability.Name == ForceCloak));
 	        }
 	    }
 
