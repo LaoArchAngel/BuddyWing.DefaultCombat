@@ -156,9 +156,33 @@ namespace DefaultCombat.Helpers
 
 		public static int BuffCount(this TorCharacter p, string buffName)
 		{
-			return !p.HasMyBuff(buffName)
-				? 0
-				: p.Buffs.FirstOrDefault(b => b.Name.Contains(buffName) && b.CasterGuid == BuddyTor.Me.Guid).GetStacks();
+            if (!p.HasMyBuff(buffName))
+                return 0;
+
+            var matches =
+                p.Buffs.Where(effect => effect.Name.Contains(buffName) && effect.CasterGuid == BuddyTor.Me.Guid);
+
+            var torEffects = matches as TorEffect[] ?? matches.ToArray();
+            if (torEffects.Length == 1)
+                return torEffects.First().GetStacks();
+
+            string message = "Found multiple buffs.";
+            foreach (var torEffect in torEffects)
+            {
+                try
+                {
+                    var stacks = torEffect.Stacks;
+                    message += string.Format("\n{0}[{1}] ({2})", torEffect.Name, torEffect.EffectNumber, stacks);
+                }
+                catch
+                {
+                    message += string.Format("\n{0}[{1}] (UNK)", torEffect.Name, torEffect.EffectNumber);
+                }
+            }
+
+            Logger.Write(message);
+
+            return 1;
 		}
 
 		public static int DebuffCount(this TorCharacter p, string buffName)
