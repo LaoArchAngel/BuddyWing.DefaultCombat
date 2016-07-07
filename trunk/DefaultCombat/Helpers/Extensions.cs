@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 using Buddy.Swtor;
 using Buddy.Swtor.Objects;
 
@@ -272,13 +273,15 @@ namespace DefaultCombat.Helpers
 		public static int GetStacks(this TorEffect t)
 		{
 			var result = 0;
+
 			try
 			{
 				result = t.Stacks;
 			}
-			catch
+            catch(Exception e)
 			{
 				result = 1;
+                Logger.Write(Colors.Crimson, string.Format("Error getting stacks: {0}", e));
 			}
 			return result;
 		}
