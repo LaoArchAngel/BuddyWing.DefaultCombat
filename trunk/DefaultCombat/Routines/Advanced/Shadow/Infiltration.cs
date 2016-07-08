@@ -108,7 +108,7 @@ namespace DefaultCombat.Routines
 	                FillBreachingShadows,
 	                ForceCloakCombo,
 	                BuildBreachingShadows,
-	                Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.5f && Me.IsMoving && Me.InCombat),
+	                Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.1f && Me.IsMoving),
 	                Spell.Cast(SaberStrike)
 	                ));
 	        }
