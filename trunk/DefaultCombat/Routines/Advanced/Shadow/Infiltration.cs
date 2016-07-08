@@ -95,14 +95,6 @@ namespace DefaultCombat.Routines
 	                //Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting),
 	                //Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting),
 
-	                //Rotation
-	                //new Action(context =>
-	                //{
-	                //    Logger.Write(
-	                //        Me.KnownAbilitiesContainer.Single(ability => ability.Name == PsychokineticBlast)
-	                //            .GlobalCooldownTime.ToString(CultureInfo.InvariantCulture));
-	                //    return RunStatus.Failure;
-	                //}),
 	                DuringGC,
 	                UseFB,
 	                RefreshClairvoyance,
