@@ -90,10 +90,10 @@ namespace DefaultCombat.Routines
 	                //Movement
 	                CombatMovement.CloseDistance(Distance.Melee),
 
-	                //Interrupts
-	                Spell.Cast("Mind Snap", ret => Me.CurrentTarget.IsCasting),
-	                //Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting),
-	                //Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting),
+                    //Interrupts
+                    Spell.Cast("Mind Snap", ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
+                    Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
+                    Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
 
 	                DuringGC,
 	                UseFB,
