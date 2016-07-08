@@ -15,7 +15,8 @@ namespace DefaultCombat.Routines
 {
 	internal class Infiltration : RotationBase
 	{
-	    private static TorAbility _forceCloakAbility;
+	    private TorAbility _forceCloakAbility;
+	    private Decorator _duringGc;
 	    private const string BreachingShadows = "Breaching Shadows";
 	    private const string Clairvoyance = "Clairvoyance";
 	    private const string CirclingShadows = "Circling Shadows";
@@ -273,7 +274,7 @@ namespace DefaultCombat.Routines
 	        }
 	    }
 
-	    private static TorAbility ForceCloakAbility
+	    private TorAbility ForceCloakAbility
 	    {
 	        get {
 	            return _forceCloakAbility ??
@@ -286,15 +287,15 @@ namespace DefaultCombat.Routines
 	        get { return BreachingShadowsTime > 24; }
 	    }
 
-	    private static Decorator DuringGC
+	    private Decorator DuringGC
 	    {
 	        get
 	        {
-	            return new Decorator(reqs => IsGC,
+	            return _duringGc ?? (_duringGc = new Decorator(reqs => IsGC,
 	                new PrioritySelector(
 	                    FillBreachingShadows,
 	                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite) && Me.Force < 40),
-	                    new Action(ret => RunStatus.Success)));
+	                    new Action(ret => RunStatus.Success))));
 	        }
 	    }
 	}
