@@ -35,6 +35,8 @@ namespace DefaultCombat.Routines
 	    private const string ShadowsRespite = "Shadow's Respite";
 	    private const string ForceCloak = "Force Cloak";
 
+        private string MainAttack { get; set; }
+
 	    public override string Name
 		{
 			get { return "Shadow Infiltration"; }
@@ -152,7 +154,7 @@ namespace DefaultCombat.Routines
 	                new PrioritySelector(
                         Spell.Cast(ShadowStrike, ret => Me.HasBuff(InfiltrationTactics)),
 	                    Spell.Cast(SpinningStrike, ret => CanExecute),
-	                    Spell.Cast(ClairvoyantStrike),
+	                    Spell.Cast(MainAttack),
 	                    Spell.Cast(LowSlash, reqs => Me.CurrentTarget.Distance > 0.4f),
 	                    Spell.Cast(WhirlingBlow,
 	                        reqs =>
@@ -231,7 +233,7 @@ namespace DefaultCombat.Routines
 	        {
 	            return new Decorator(ctx => ClairvoyanceCount == 0 || ClairvoyanceTime < 2,
 	                new PrioritySelector(
-                        Spell.Cast(ClairvoyantStrike),
+                        Spell.Cast(MainAttack),
                         Spell.Cast(WhirlingBlow)));
 	        }
 	    }
