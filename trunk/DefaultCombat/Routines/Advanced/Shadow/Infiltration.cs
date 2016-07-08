@@ -87,11 +87,6 @@ namespace DefaultCombat.Routines
 	        get
 	        {
 	            return _mainRotation ?? (_mainRotation = new PrioritySelector(
-	                Spell.Buff("Force Speed",
-	                    ret =>
-	                        !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1.5f &&
-	                        Me.CurrentTarget.Distance <= 3f),
-
 	                //Movement
 	                CombatMovement.CloseDistance(Distance.Melee),
 
