@@ -18,6 +18,8 @@ namespace DefaultCombat.Routines
 	    private TorAbility _forceCloakAbility;
 	    private Decorator _duringGc;
 	    private PrioritySelector _mainRotation;
+	    private Decorator _singleTarget;
+	    private Decorator _areaOfEffect;
 	    private const string BreachingShadows = "Breaching Shadows";
 	    private const string Clairvoyance = "Clairvoyance";
 	    private const string CirclingShadows = "Circling Shadows";
@@ -69,17 +71,16 @@ namespace DefaultCombat.Routines
 		    }
 		}
 
-		public override Composite SingleTarget
-		{
-		    get {
-		        return GetRotation(ClairvoyantStrike);
-		    }
-		}
-
-	    private Composite GetRotation(string mainAttack)
+	    public override Composite SingleTarget
 	    {
-	        MainAttack = mainAttack;
-	        return MainRotation;
+	        get
+	        {
+	            return _singleTarget ?? (_singleTarget = new Decorator(reqs =>
+	            {
+	                MainAttack = ClairvoyantStrike;
+	                return true;
+	            }, MainRotation));
+	        }
 	    }
 
 	    private Composite MainRotation
@@ -115,9 +116,16 @@ namespace DefaultCombat.Routines
 	    }
 
 	    public override Composite AreaOfEffect
-		{
-			get { return GetRotation(WhirlingBlow); }
-		}
+	    {
+	        get
+	        {
+	            return _areaOfEffect ?? (_areaOfEffect = new Decorator(reqs =>
+	            {
+	                MainAttack = WhirlingBlow;
+	                return true;
+	            }, MainRotation));
+	        }
+	    }
 
 	    private bool PBLast { get; set; }
 
