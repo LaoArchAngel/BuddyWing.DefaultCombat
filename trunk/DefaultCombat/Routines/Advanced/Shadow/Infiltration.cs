@@ -17,9 +17,6 @@ namespace DefaultCombat.Routines
 	{
 	    private TorAbility _forceCloakAbility;
 	    private Decorator _duringGc;
-	    private PrioritySelector _mainRotation;
-	    private Decorator _singleTarget;
-	    private Decorator _areaOfEffect;
 	    private const string BreachingShadows = "Breaching Shadows";
 	    private const string Clairvoyance = "Clairvoyance";
 	    private const string CirclingShadows = "Circling Shadows";
@@ -37,8 +34,6 @@ namespace DefaultCombat.Routines
 	    private const string Blackout = "Blackout";
 	    private const string ShadowsRespite = "Shadow's Respite";
 	    private const string ForceCloak = "Force Cloak";
-
-        private string MainAttack { get; set; }
 
 	    public override string Name
 		{
@@ -73,58 +68,40 @@ namespace DefaultCombat.Routines
 
 	    public override Composite SingleTarget
 	    {
-	        get
-	        {
-	            return _singleTarget ?? (_singleTarget = new Decorator(reqs =>
-	            {
-	                MainAttack = ClairvoyantStrike;
-	                return true;
-	            }, MainRotation));
-	        }
+	        get { return GetMainRotation(ClairvoyantStrike); }
 	    }
 
-	    private Composite MainRotation
+	    private Composite GetMainRotation(string mainAttack)
 	    {
-	        get
-	        {
-	            return _mainRotation ?? (_mainRotation = new PrioritySelector(
-	                //Movement
-	                CombatMovement.CloseDistance(Distance.Melee),
+	        return new PrioritySelector(
+	            //Movement
+	            CombatMovement.CloseDistance(Distance.Melee),
 
-	                //Interrupts
-	                Spell.Cast("Mind Snap", ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
-	                Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
-	                Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
-
-	                DuringGC,
-	                UseFB,
-	                RefreshClairvoyance,
-	                UsePB,
-	                new Action(delegate
-	                {
-	                    PBLast = false;
-	                    return RunStatus.Failure;
-	                }),
-	                Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite) && Me.Force <= 40),
-	                FillBreachingShadows,
-	                ForceCloakCombo,
-	                BuildBreachingShadows,
-	                Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.1f && Me.IsMoving),
-	                Spell.Cast(SaberStrike)
-	                ));
-	        }
+	            //Interrupts
+	            Spell.Cast("Mind Snap", ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
+	            Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
+	            Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting && !DefaultCombat.MovementDisabled),
+	            DuringGC,
+	            UseFB,
+	            CreateRefreshClairvoyance(mainAttack),
+	            UsePB,
+	            new Action(delegate
+	            {
+	                PBLast = false;
+	                return RunStatus.Failure;
+	            }),
+	            Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite) && Me.Force <= 40),
+	            FillBreachingShadows,
+	            ForceCloakCombo,
+	            CreateBuildBreachingShadows(mainAttack),
+	            Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.1f && Me.IsMoving),
+	            Spell.Cast(SaberStrike)
+	            );
 	    }
 
 	    public override Composite AreaOfEffect
 	    {
-	        get
-	        {
-	            return _areaOfEffect ?? (_areaOfEffect = new Decorator(reqs =>
-	            {
-	                MainAttack = WhirlingBlow;
-	                return true;
-	            }, MainRotation));
-	        }
+	        get { return GetMainRotation(WhirlingBlow); }
 	    }
 
 	    private bool PBLast { get; set; }
@@ -155,22 +132,19 @@ namespace DefaultCombat.Routines
             get { return Me.BuffCount(CirclingShadows); }
 	    }
 
-	    private Decorator BuildBreachingShadows
+	    private Decorator CreateBuildBreachingShadows(string mainAttack)
 	    {
-	        get
-	        {
-	            return new Decorator(ctx => BreachingShadowsCount < 3 || BreachingShadowsDowntime,
-	                new PrioritySelector(
-                        Spell.Cast(ShadowStrike, ret => Me.HasBuff(InfiltrationTactics)),
-	                    Spell.Cast(SpinningStrike, ret => CanExecute),
-	                    Spell.Cast(MainAttack),
-	                    Spell.Cast(LowSlash, reqs => Me.CurrentTarget.Distance > 0.4f),
-	                    Spell.Cast(WhirlingBlow,
-	                        reqs =>
-	                            Me.CurrentTarget.Distance > 0.4f && !AbilityManager.CanCast(LowSlash, Me.CurrentTarget) &&
-	                            Me.Force > 45)
-	                    ));
-	        }
+	        return new Decorator(ctx => BreachingShadowsCount < 3 || BreachingShadowsDowntime,
+	            new PrioritySelector(
+	                Spell.Cast(ShadowStrike, ret => Me.HasBuff(InfiltrationTactics)),
+	                Spell.Cast(SpinningStrike, ret => CanExecute),
+	                Spell.Cast(mainAttack),
+	                Spell.Cast(LowSlash, reqs => Me.CurrentTarget.Distance > 0.4f),
+	                Spell.Cast(WhirlingBlow,
+	                    reqs =>
+	                        Me.CurrentTarget.Distance > 0.4f && !AbilityManager.CanCast(LowSlash, Me.CurrentTarget) &&
+	                        Me.Force > 45)
+	                ));
 	    }
 
 	    private static Decorator FillBreachingShadows
@@ -236,15 +210,12 @@ namespace DefaultCombat.Routines
 	        get { return Me.CurrentTarget.HealthPercent < 30; }
 	    }
 
-	    private Decorator RefreshClairvoyance
+	    private Decorator CreateRefreshClairvoyance(string mainAttack)
 	    {
-	        get
-	        {
-	            return new Decorator(ctx => ClairvoyanceCount == 0 || ClairvoyanceTime < 2,
-	                new PrioritySelector(
-                        Spell.Cast(MainAttack),
-                        Spell.Cast(WhirlingBlow)));
-	        }
+	        return new Decorator(ctx => ClairvoyanceCount == 0 || ClairvoyanceTime < 2,
+	            new PrioritySelector(
+	                Spell.Cast(mainAttack),
+	                Spell.Cast(WhirlingBlow)));
 	    }
 
 	    private static double ClairvoyanceTime
