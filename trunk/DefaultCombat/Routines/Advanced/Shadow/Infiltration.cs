@@ -17,6 +17,7 @@ namespace DefaultCombat.Routines
 	{
 	    private TorAbility _forceCloakAbility;
 	    private Decorator _duringGc;
+	    private PrioritySelector _mainRotation;
 	    private const string BreachingShadows = "Breaching Shadows";
 	    private const string Clairvoyance = "Clairvoyance";
 	    private const string CirclingShadows = "Circling Shadows";
@@ -70,52 +71,65 @@ namespace DefaultCombat.Routines
 
 		public override Composite SingleTarget
 		{
-		    get
-		    {
-		        return new PrioritySelector(
-		            Spell.Buff("Force Speed",
-		                ret =>
-		                    !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1.5f &&
-		                    Me.CurrentTarget.Distance <= 3f),
-
-		            //Movement
-		            CombatMovement.CloseDistance(Distance.Melee),
-
-		            //Interrupts
-		            Spell.Cast("Mind Snap", ret => Me.CurrentTarget.IsCasting),
-		            //Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting),
-		            //Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting),
-
-		            //Rotation
-                    //new Action(context =>
-                    //{
-                    //    Logger.Write(
-                    //        Me.KnownAbilitiesContainer.Single(ability => ability.Name == PsychokineticBlast)
-                    //            .GlobalCooldownTime.ToString(CultureInfo.InvariantCulture));
-                    //    return RunStatus.Failure;
-                    //}),
-                    DuringGC,
-		            UseFB,
-		            RefreshClairvoyance,
-                    UsePB,
-		            new Action(delegate
-		            {
-		                PBLast = false;
-		                return RunStatus.Failure;
-		            }),
-                    Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite) && Me.Force <= 40),
-                    FillBreachingShadows,
-                    ForceCloakCombo,
-                    BuildBreachingShadows,
-		            Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.5f && Me.IsMoving && Me.InCombat),
-                    Spell.Cast(SaberStrike)
-		            );
+		    get {
+		        return GetRotation(ClairvoyantStrike);
 		    }
 		}
 
-		public override Composite AreaOfEffect
+	    private Composite GetRotation(string mainAttack)
+	    {
+	        MainAttack = mainAttack;
+	        return MainRotation;
+	    }
+
+	    private Composite MainRotation
+	    {
+	        get
+	        {
+	            return _mainRotation ?? (_mainRotation = new PrioritySelector(
+	                Spell.Buff("Force Speed",
+	                    ret =>
+	                        !DefaultCombat.MovementDisabled && Me.CurrentTarget.Distance >= 1.5f &&
+	                        Me.CurrentTarget.Distance <= 3f),
+
+	                //Movement
+	                CombatMovement.CloseDistance(Distance.Melee),
+
+	                //Interrupts
+	                Spell.Cast("Mind Snap", ret => Me.CurrentTarget.IsCasting),
+	                //Spell.Cast("Force Stun", ret => Me.CurrentTarget.IsCasting),
+	                //Spell.Cast(LowSlash, ret => Me.CurrentTarget.IsCasting),
+
+	                //Rotation
+	                //new Action(context =>
+	                //{
+	                //    Logger.Write(
+	                //        Me.KnownAbilitiesContainer.Single(ability => ability.Name == PsychokineticBlast)
+	                //            .GlobalCooldownTime.ToString(CultureInfo.InvariantCulture));
+	                //    return RunStatus.Failure;
+	                //}),
+	                DuringGC,
+	                UseFB,
+	                RefreshClairvoyance,
+	                UsePB,
+	                new Action(delegate
+	                {
+	                    PBLast = false;
+	                    return RunStatus.Failure;
+	                }),
+	                Spell.Cast(Blackout, reqs => !Me.HasBuff(ShadowsRespite) && Me.Force <= 40),
+	                FillBreachingShadows,
+	                ForceCloakCombo,
+	                BuildBreachingShadows,
+	                Spell.Cast("Force Speed", ret => Me.CurrentTarget.Distance >= 1.5f && Me.IsMoving && Me.InCombat),
+	                Spell.Cast(SaberStrike)
+	                ));
+	        }
+	    }
+
+	    public override Composite AreaOfEffect
 		{
-			get { return SingleTarget; }
+			get { return GetRotation(WhirlingBlow); }
 		}
 
 	    private bool PBLast { get; set; }
