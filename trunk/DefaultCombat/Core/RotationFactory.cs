@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using Buddy.CommonBot;
 using Buddy.Swtor;
 using DefaultCombat.Routines;
 
@@ -47,6 +48,9 @@ namespace DefaultCombat.Core
 			{
 				name = "Pyrotech";
 			}
+
+            if(AbilityManager.HasAbility(Infiltration.ShadowTechnique))
+                return new Infiltration();
 
 			var ns = "DefaultCombat.Routines";
 			var assembly = Assembly.GetExecutingAssembly();

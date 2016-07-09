@@ -34,6 +34,7 @@ namespace DefaultCombat.Routines
 	    private const string Blackout = "Blackout";
 	    private const string ShadowsRespite = "Shadow's Respite";
 	    private const string ForceCloak = "Force Cloak";
+	    internal const string ShadowTechnique = "Shadow Technique";
 
 	    public override string Name
 		{
@@ -45,7 +46,7 @@ namespace DefaultCombat.Routines
 			get
 			{
 				return new PrioritySelector(
-					Spell.Buff("Shadow Technique"),
+					Spell.Buff(ShadowTechnique),
 					Spell.Buff("Force Valor"),
 					Spell.Cast("Guard", on => Me.Companion,
 						ret => Me.Companion != null && !Me.Companion.IsDead && !Me.Companion.HasBuff("Guard")),
