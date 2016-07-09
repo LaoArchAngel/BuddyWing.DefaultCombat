@@ -20,7 +20,7 @@ namespace DefaultCombat.Routines
 	    private const string Project = "Project";
 	    private const string HarnessedShadows = "Harnessed Shadows";
 	    private const string SaberStrike = "Saber Strike";
-	    private const string KineticWard = "Kinetic Ward";
+	    internal const string KineticWard = "Kinetic Ward";
 
 	    public override string Name
 		{

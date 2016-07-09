@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using Buddy.CommonBot;
 using Buddy.Swtor;
 using DefaultCombat.Routines;
 
@@ -12,8 +13,11 @@ namespace DefaultCombat.Core
 	{
 		public RotationBase Build(string name)
 		{
-			//Set the basic class as the rotation if char has no advanced class
-			if (BuddyTor.Me.AdvancedClass == AdvancedClass.None)
+            if (AbilityManager.HasAbility(KeneticCombat.KineticWard))
+                return new KeneticCombat();
+
+            //Set the basic class as the rotation if char has no advanced class
+            if (BuddyTor.Me.AdvancedClass == AdvancedClass.None)
 			{
 				name = BuddyTor.Me.CharacterClass.ToString();
 			}
