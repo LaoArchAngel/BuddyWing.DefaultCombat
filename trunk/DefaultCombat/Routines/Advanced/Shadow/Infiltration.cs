@@ -232,6 +232,7 @@ namespace DefaultCombat.Routines
 	                new Decorator(
 	                    reqs =>
 	                        !Me.HasBuff(ShadowsRespite) && BreachingShadowsCount == 0 &&
+                            Me.PartyPlayers().Count() > 1 &&
                             AbilityManager.CanCast(ForceCloak, Me) &&
 	                        Me.IsAbilityReady(BlackoutAbility, Me) == EffectResult.NotReady &&
 	                        Me.IsAbilityReady(ForcePotencyAbility, Me) == EffectResult.NotReady && Me.Force <= 40,
