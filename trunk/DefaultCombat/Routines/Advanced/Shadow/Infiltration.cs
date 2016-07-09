@@ -101,7 +101,7 @@ namespace DefaultCombat.Routines
 
 	    public override Composite AreaOfEffect
 	    {
-	        get { return GetMainRotation(WhirlingBlow); }
+	        get { return new Decorator(reqs => Targeting.ShouldPbaoe, GetMainRotation(WhirlingBlow)); }
 	    }
 
 	    private bool PBLast { get; set; }
