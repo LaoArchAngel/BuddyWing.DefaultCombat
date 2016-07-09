@@ -13,8 +13,12 @@ namespace DefaultCombat.Core
 	{
 		public RotationBase Build(string name)
 		{
-			//Set the basic class as the rotation if char has no advanced class
-			if (BuddyTor.Me.AdvancedClass == AdvancedClass.None)
+
+            if (AbilityManager.HasAbility(Infiltration.ShadowTechnique))
+                return new Infiltration();
+
+            //Set the basic class as the rotation if char has no advanced class
+            if (BuddyTor.Me.AdvancedClass == AdvancedClass.None)
 			{
 				name = BuddyTor.Me.CharacterClass.ToString();
 			}
@@ -48,9 +52,6 @@ namespace DefaultCombat.Core
 			{
 				name = "Pyrotech";
 			}
-
-            if(AbilityManager.HasAbility(Infiltration.ShadowTechnique))
-                return new Infiltration();
 
 			var ns = "DefaultCombat.Routines";
 			var assembly = Assembly.GetExecutingAssembly();
